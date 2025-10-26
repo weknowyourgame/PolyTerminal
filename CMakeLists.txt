@@ -9,5 +9,5 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
-add_executable(PolyTerminal src/main.cpp)
+add_executable(PolyTerminal src/main.cpp src/globalShortcuts.cpp)
 target_link_libraries(PolyTerminal PRIVATE Qt6::Widgets)
