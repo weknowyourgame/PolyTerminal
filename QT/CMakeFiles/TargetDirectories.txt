@@ -1,0 +1,4 @@
+/home/frosty/PolyTerminal/QT/CMakeFiles/PolyTerminal.dir
+/home/frosty/PolyTerminal/QT/CMakeFiles/edit_cache.dir
+/home/frosty/PolyTerminal/QT/CMakeFiles/rebuild_cache.dir
+/home/frosty/PolyTerminal/QT/CMakeFiles/PolyTerminal_autogen.dir
