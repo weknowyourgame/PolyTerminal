@@ -1,14 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
-project(PolyTerminal VERSION 0.1)
+
+project(PolyApi VERSION 0.1)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 # Find protobuf and gRPC using system packages
 find_package(Protobuf REQUIRED)
@@ -24,8 +19,8 @@ if(NOT GRPC_CPP_PLUGIN)
 endif()
 
 # Proto compilation for polymarket
-get_filename_component(pm_clob_proto "Api/polymarket_clob.proto" ABSOLUTE)
-get_filename_component(pm_gamma_proto "Api/polymarket_gamma.proto" ABSOLUTE)
+get_filename_component(pm_clob_proto "${CMAKE_CURRENT_SOURCE_DIR}/polymarket_clob.proto" ABSOLUTE)
+get_filename_component(pm_gamma_proto "${CMAKE_CURRENT_SOURCE_DIR}/polymarket_gamma.proto" ABSOLUTE)
 get_filename_component(pm_proto_path "${pm_clob_proto}" PATH)
 
 set(pm_clob_proto_srcs "${CMAKE_CURRENT_BINARY_DIR}/polymarket_clob.pb.cc")
@@ -75,19 +70,10 @@ target_link_libraries(api_proto
   PkgConfig::grpc++
   protobuf::libprotobuf)
 
-# QT executable
-add_executable(PolyTerminal 
-  QT/main.cpp 
-  QT/globalShortcuts.cpp 
-  QT/globalShortcuts.h
-  QT/MainWindow.cpp 
-  QT/MainWindow.h
-  QT/constants.h)
-target_link_libraries(PolyTerminal PRIVATE Qt6::Widgets)
-
 # gRPC server executable
-add_executable(BackendApi Api/main.cpp)
+add_executable(BackendApi main.cpp)
 target_link_libraries(BackendApi
   api_proto
   PkgConfig::grpc++
   protobuf::libprotobuf)
+

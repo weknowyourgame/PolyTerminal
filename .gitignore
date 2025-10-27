@@ -1,3 +1,43 @@
+# IDE
 .idea
-build
-grpc
+.vscode
+*.swp
+*.swo
+
+# Build artifacts
+build/
+cmake-build-debug/
+cmake-build-release/
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+*.cmake
+!CMakeLists.txt
+*.a
+*.o
+*.so
+*.dylib
+*.dll
+Makefile
+PolyTerminal
+BackendApi
+
+# Auto-generated files
+*_autogen/
+moc_*.cpp
+moc_*.h
+ui_*.h
+*.qrc.depends
+
+# gRPC (submodule)
+grpc/
+protos/
+
+# Proto generated files
+*.pb.cc
+*.pb.h
+*.grpc.pb.cc
+*.grpc.pb.h
+
+Api/build
+QT/build
