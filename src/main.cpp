@@ -13,6 +13,7 @@ int main(int argc, char **argv)
     QMainWindow window;
     window.resize(1200, 800);
     window.setWindowFlags(Qt::FramelessWindowHint);
+    QWidget *mainWidget = new QWidget;
 
     // MenuBar
     QMenuBar *menuBar = window.menuBar();
