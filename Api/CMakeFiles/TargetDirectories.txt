@@ -1,0 +1,8 @@
+/home/frosty/PolyTerminal/Api/CMakeFiles/api_proto.dir
+/home/frosty/PolyTerminal/Api/CMakeFiles/PolyTerminal.dir
+/home/frosty/PolyTerminal/Api/CMakeFiles/BackendApi.dir
+/home/frosty/PolyTerminal/Api/CMakeFiles/edit_cache.dir
+/home/frosty/PolyTerminal/Api/CMakeFiles/rebuild_cache.dir
+/home/frosty/PolyTerminal/Api/CMakeFiles/api_proto_autogen.dir
+/home/frosty/PolyTerminal/Api/CMakeFiles/PolyTerminal_autogen.dir
+/home/frosty/PolyTerminal/Api/CMakeFiles/BackendApi_autogen.dir

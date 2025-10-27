@@ -1,0 +1,2 @@
+/usr/bin/ar qc libapi_proto.a CMakeFiles/api_proto.dir/api_proto_autogen/mocs_compilation.cpp.o CMakeFiles/api_proto.dir/polymarket_clob.pb.cc.o CMakeFiles/api_proto.dir/polymarket_clob.grpc.pb.cc.o CMakeFiles/api_proto.dir/polymarket_gamma.pb.cc.o CMakeFiles/api_proto.dir/polymarket_gamma.grpc.pb.cc.o
+/usr/bin/ranlib libapi_proto.a

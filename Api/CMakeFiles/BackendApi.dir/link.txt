@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/BackendApi.dir/BackendApi_autogen/mocs_compilation.cpp.o CMakeFiles/BackendApi.dir/main.cpp.o -o BackendApi  libapi_proto.a /usr/lib/x86_64-linux-gnu/libprotobuf.so /usr/lib/x86_64-linux-gnu/libgrpc++.so /usr/lib/x86_64-linux-gnu/libgrpc.so /usr/lib/x86_64-linux-gnu/libgpr.so 
