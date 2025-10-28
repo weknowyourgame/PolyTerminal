@@ -4,7 +4,6 @@
 #include <grpc++/grpc++.h>
 
 #include "polymarket_clob.grpc.pb.h"
-#include "polymarket_gamma.grpc.pb.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -15,13 +14,9 @@ using grpc::Status;
 class ClobServiceImpl final : public clob::Service {
 };
 
-class GammaServiceImpl final : public gamma::Service {
-};
-
 void RunServer() {
     std::string server_address("0.0.0.0:8888");
     ClobServiceImpl clob_service;
-    GammaServiceImpl gamma_service;
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.
@@ -30,7 +25,6 @@ void RunServer() {
     // Register "service" as the instance through which we'll communicate with
     // clients. In this case it corresponds to an *synchronous* service.
     builder.RegisterService(&clob_service);
-    builder.RegisterService(&gamma_service);
     
     // Finally assemble the server.
     std::unique_ptr<Server> server(builder.BuildAndStart());

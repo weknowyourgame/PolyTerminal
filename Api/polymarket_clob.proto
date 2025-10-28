@@ -19,6 +19,22 @@ service events {
   rpc getEventTags (GetEventTagsRequest) returns (GetEventTagsResponse);
 }
 
+service markets {
+  rpc listMarkets (ListMarketsRequest) returns (ListMarketsResponse);
+  rpc getMarketById (GetMarketByIdRequest) returns (Market);
+  rpc getMarketBySlug (GetMarketBySlugRequest) returns (Market);
+  rpc getMarketTags (GetMarketTagsRequest) returns (GetMarketTagsResponse);
+}
+
+service series {
+  rpc listSeries (ListSeriesRequest) returns (ListSeriesResponse);
+  rpc getSeriesById (GetSeriesByIdRequest) returns (Series);
+}
+
+service search {
+  rpc publicSearch (PublicSearchRequest) returns (PublicSearchResponse);
+}
+
 message Empty {}
 
 message ListTeamsRequest {
@@ -207,4 +223,257 @@ message Tag {
   optional google.protobuf.Timestamp updatedAt = 9;
   optional bool forceHide = 10;
   optional bool isCarousel = 11;
+}
+
+message ListMarketsRequest {
+  optional int32 limit = 1;
+  optional int32 offset = 2;
+  optional string order = 3;
+  optional bool ascending = 4;
+  repeated int32 id = 5;
+  repeated string slug = 6;
+  repeated string clob_token_ids = 7;
+  repeated string condition_ids = 8;
+  repeated string market_maker_address = 9;
+  optional double liquidity_num_min = 10;
+  optional double liquidity_num_max = 11;
+  optional double volume_num_min = 12;
+  optional double volume_num_max = 13;
+  optional google.protobuf.Timestamp start_date_min = 14;
+  optional google.protobuf.Timestamp start_date_max = 15;
+  optional google.protobuf.Timestamp end_date_min = 16;
+  optional google.protobuf.Timestamp end_date_max = 17;
+  optional int32 tag_id = 18;
+  optional bool related_tags = 19;
+  optional bool cyom = 20;
+  optional string uma_resolution_status = 21;
+  optional string game_id = 22;
+  repeated string sports_market_types = 23;
+  optional double rewards_min_size = 24;
+  repeated string question_ids = 25;
+  optional bool include_tag = 26;
+  optional bool closed = 27;
+}
+
+message GetMarketByIdRequest {
+  int32 id = 1;
+  optional bool include_tag = 2;
+}
+
+message GetMarketBySlugRequest {
+  string slug = 1;
+  optional bool include_tag = 2;
+}
+
+message GetMarketTagsRequest {
+  int32 id = 1;
+}
+
+message ListMarketsResponse {
+  repeated Market markets = 1;
+}
+
+message GetMarketTagsResponse {
+  repeated Tag tags = 1;
+}
+
+message Market {
+  string id = 1;
+  optional string question = 2;
+  string conditionId = 3;
+  optional string slug = 4;
+  optional string twitterCardImage = 5;
+  optional string resolutionSource = 6;
+  optional google.protobuf.Timestamp endDate = 7;
+  optional string category = 8;
+  optional string ammType = 9;
+  optional string liquidity = 10;
+  optional string sponsorName = 11;
+  optional string sponsorImage = 12;
+  optional google.protobuf.Timestamp startDate = 13;
+  optional string xAxisValue = 14;
+  optional string yAxisValue = 15;
+  optional string denominationToken = 16;
+  optional string fee = 17;
+  optional string image = 18;
+  optional string icon = 19;
+  optional string lowerBound = 20;
+  optional string upperBound = 21;
+  optional string description = 22;
+  optional string outcomes = 23;
+  optional string outcomePrices = 24;
+  optional string volume = 25;
+  optional bool active = 26;
+  optional string marketType = 27;
+  optional string formatType = 28;
+  optional string lowerBoundDate = 29;
+  optional string upperBoundDate = 30;
+  optional bool closed = 31;
+  string marketMakerAddress = 32;
+  optional int32 createdBy = 33;
+  optional int32 updatedBy = 34;
+  optional google.protobuf.Timestamp createdAt = 35;
+  optional google.protobuf.Timestamp updatedAt = 36;
+  optional string closedTime = 37;
+  optional bool wideFormat = 38;
+  optional bool new = 39;
+  optional string mailchimpTag = 40;
+  optional bool featured = 41;
+  optional bool archived = 42;
+  optional string resolvedBy = 43;
+  optional bool restricted = 44;
+  optional int32 marketGroup = 45;
+  optional string groupItemTitle = 46;
+  optional string groupItemThreshold = 47;
+  optional string questionID = 48;
+  optional string umaEndDate = 49;
+  optional bool enableOrderBook = 50;
+  optional double orderPriceMinTickSize = 51;
+  optional double orderMinSize = 52;
+  optional string umaResolutionStatus = 53;
+  optional int32 curationOrder = 54;
+  optional double volumeNum = 55;
+  optional double liquidityNum = 56;
+  optional string endDateIso = 57;
+  optional string startDateIso = 58;
+  optional string umaEndDateIso = 59;
+  optional bool hasReviewedDates = 60;
+  optional bool readyForCron = 61;
+  optional bool commentsEnabled = 62;
+  optional double volume24hr = 63;
+  optional double volume1wk = 64;
+  optional double volume1mo = 65;
+  optional double volume1yr = 66;
+  optional string gameStartTime = 67;
+  optional int32 secondsDelay = 68;
+  optional string clobTokenIds = 69;
+  optional string disqusThread = 70;
+  optional string shortOutcomes = 71;
+  optional string teamAID = 72;
+  optional string teamBID = 73;
+  optional string umaBond = 74;
+  optional string umaReward = 75;
+  optional bool fpmmLive = 76;
+  optional double volume24hrAmm = 77;
+  optional double volume1wkAmm = 78;
+  optional double volume1moAmm = 79;
+  optional double volume1yrAmm = 80;
+  optional double volume24hrClob = 81;
+  optional double volume1wkClob = 82;
+  optional double volume1moClob = 83;
+  optional double volume1yrClob = 84;
+  optional double volumeAmm = 85;
+  optional double volumeClob = 86;
+  optional double liquidityAmm = 87;
+  optional double liquidityClob = 88;
+  optional int32 makerBaseFee = 89;
+  optional int32 takerBaseFee = 90;
+  optional int32 customLiveness = 91;
+  optional bool acceptingOrders = 92;
+  optional bool notificationsEnabled = 93;
+  optional int32 score = 94;
+  repeated Event events = 95;
+  repeated string categories = 96;
+  repeated Tag tags = 97;
+  optional string creator = 98;
+  optional bool ready = 99;
+  optional bool funded = 100;
+  optional string pastSlugs = 101;
+  optional google.protobuf.Timestamp readyTimestamp = 102;
+  optional google.protobuf.Timestamp fundedTimestamp = 103;
+  optional google.protobuf.Timestamp acceptingOrdersTimestamp = 104;
+  optional double competitive = 105;
+  optional double rewardsMinSize = 106;
+  optional double rewardsMaxSpread = 107;
+  optional double spread = 108;
+  optional bool automaticallyResolved = 109;
+  optional double oneDayPriceChange = 110;
+  optional double oneHourPriceChange = 111;
+  optional double oneWeekPriceChange = 112;
+  optional double oneMonthPriceChange = 113;
+  optional double oneYearPriceChange = 114;
+  optional double lastTradePrice = 115;
+  optional double bestBid = 116;
+  optional double bestAsk = 117;
+  optional bool automaticallyActive = 118;
+  optional bool clearBookOnStart = 119;
+  optional string chartColor = 120;
+  optional string seriesColor = 121;
+  optional bool showGmpSeries = 122;
+  optional bool showGmpOutcome = 123;
+  optional bool manualActivation = 124;
+  optional bool negRiskOther = 125;
+  optional string gameId = 126;
+  optional string groupItemRange = 127;
+  optional string sportsMarketType = 128;
+  optional double line = 129;
+  optional string umaResolutionStatuses = 130;
+  optional bool pendingDeployment = 131;
+  optional bool deploying = 132;
+  optional google.protobuf.Timestamp deployingTimestamp = 133;
+  optional google.protobuf.Timestamp scheduledDeploymentTimestamp = 134;
+  optional bool rfqEnabled = 135;
+  optional google.protobuf.Timestamp eventStartTime = 136;
+}
+
+message ListSeriesRequest {
+  optional int32 limit = 1;
+  optional int32 offset = 2;
+  optional string order = 3;
+  optional bool ascending = 4;
+  repeated string slug = 5;
+  repeated int32 categories_ids = 6;
+  repeated string categories_labels = 7;
+  optional bool closed = 8;
+  optional bool include_chat = 9;
+  optional string recurrence = 10;
+}
+
+message GetSeriesByIdRequest {
+  int32 id = 1;
+  optional bool include_chat = 2;
+}
+
+message ListSeriesResponse {
+  repeated Series series = 1;
+}
+
+message PublicSearchRequest {
+  string q = 1;
+  optional bool cache = 2;
+  optional string events_status = 3;
+  optional int32 limit_per_type = 4;
+  optional int32 page = 5;
+  repeated string events_tag = 6;
+  optional int32 keep_closed_markets = 7;
+  optional string sort = 8;
+  optional bool ascending = 9;
+  optional bool search_tags = 10;
+  optional bool search_profiles = 11;
+  optional string recurrence = 12;
+  repeated int32 exclude_tag_id = 13;
+  optional bool optimized = 14;
+}
+
+message PublicSearchResponse {
+  repeated Event events = 1;
+  repeated Tag tags = 2;
+  repeated Profile profiles = 3;
+  SearchPagination pagination = 4;
+}
+
+message Profile {
+  string id = 1;
+  optional string username = 2;
+  optional string name = 3;
+  optional string bio = 4;
+  optional string avatar = 5;
+  optional bool verified = 6;
+}
+
+message SearchPagination {
+  int32 total = 1;
+  int32 page = 2;
+  int32 limit = 3;
+  int32 total_pages = 4;
 }

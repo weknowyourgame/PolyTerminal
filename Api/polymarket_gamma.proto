@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package polymarket.gamma;
-
-service gamma {
-    
-}
