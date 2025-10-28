@@ -1,6 +1,210 @@
 syntax = "proto3";
 
 package polymarket.clob;
+import "google/protobuf/timestamp.proto";
 
-service clob {
+service status {
+  rpc CheckStatus (Empty) returns (ClobApiStatus);
+}
+
+service sports {
+  rpc listTeams (ListTeamsRequest) returns (ListTeamsResponse);
+  rpc getSportsMetadata (Empty) returns (SportsMetadataResponse);
+}
+
+service events {
+  rpc listEvents (ListEventsRequest) returns (ListEventsResponse);
+  rpc getEventById (GetEventByIdRequest) returns (Event);
+  rpc getEventBySlug (GetEventBySlugRequest) returns (Event);
+  rpc getEventTags (GetEventTagsRequest) returns (GetEventTagsResponse);
+}
+
+message Empty {}
+
+message ListTeamsRequest {
+  optional uint32 id = 1;
+  optional uint32 offset = 2;
+  optional string order = 3;
+  optional bool ascending = 4;
+  repeated string league = 5;
+  repeated string name = 6;
+  repeated string abbreviation = 7;
+}
+
+message ClobApiStatus {
+  string status = 1;  // "healthy" or "down"
+}
+
+message ListTeamsResponse {
+  int64 id = 1;
+  optional string name = 2;
+  optional string league = 3;
+  optional string record = 4;
+  optional string logo = 5;
+  optional string abbreviation = 6;
+  optional string alias = 7;
+  google.protobuf.Timestamp createdAt = 8;
+  google.protobuf.Timestamp updatedAt = 9;
+}
+
+message SportsMetadataResponse {
+  string sport = 1;
+  optional string image = 2;
+  optional string resolution = 3;
+  optional string ordering = 4;
+  optional string tags = 5;
+  optional string series = 6;
+}
+
+message ListEventsRequest {
+  optional int32 limit = 1;
+  optional int32 offset = 2;
+  optional string order = 3;
+  optional bool ascending = 4;
+  repeated int32 id = 5;
+  repeated string slug = 6;
+  optional int32 tag_id = 7;
+  repeated int32 exclude_tag_id = 8;
+  optional bool related_tags = 9;
+  optional bool featured = 10;
+  optional bool cyom = 11;
+  optional bool include_chat = 12;
+  optional bool include_template = 13;
+  optional string recurrence = 14;
+  optional bool closed = 15;
+  optional string start_date_min = 16;
+  optional string start_date_max = 17;
+  optional string end_date_min = 18;
+  optional string end_date_max = 19;
+}
+
+message GetEventByIdRequest {
+  int32 id = 1;
+  optional bool include_chat = 2;
+  optional bool include_template = 3;
+}
+
+message GetEventBySlugRequest {
+  string slug = 1;
+  optional bool include_chat = 2;
+  optional bool include_template = 3;
+}
+
+message GetEventTagsRequest {
+  int32 id = 1;
+}
+
+message ListEventsResponse {
+  repeated Event events = 1;
+}
+
+message GetEventTagsResponse {
+  repeated Tag tags = 1;
+}
+
+message Event {
+  string id = 1;
+  optional string ticker = 2;
+  optional string slug = 3;
+  optional string title = 4;
+  optional string subtitle = 5;
+  optional string description = 6;
+  optional string resolutionSource = 7;
+  optional google.protobuf.Timestamp startDate = 8;
+  optional google.protobuf.Timestamp creationDate = 9;
+  optional google.protobuf.Timestamp endDate = 10;
+  optional string image = 11;
+  optional string icon = 12;
+  optional bool active = 13;
+  optional bool closed = 14;
+  optional bool archived = 15;
+  optional bool new = 16;
+  optional bool featured = 17;
+  optional bool restricted = 18;
+  optional double liquidity = 19;
+  optional double volume = 20;
+  optional double openInterest = 21;
+  optional string sortBy = 22;
+  optional string category = 23;
+  optional string subcategory = 24;
+  optional bool isTemplate = 25;
+  optional string templateVariables = 26;
+  optional google.protobuf.Timestamp published_at = 27;
+  optional string createdBy = 28;
+  optional string updatedBy = 29;
+  optional google.protobuf.Timestamp createdAt = 30;
+  optional google.protobuf.Timestamp updatedAt = 31;
+  optional bool commentsEnabled = 32;
+  optional double competitive = 33;
+  optional double volume24hr = 34;
+  optional double volume1wk = 35;
+  optional double volume1mo = 36;
+  optional double volume1yr = 37;
+  optional string featuredImage = 38;
+  optional string disqusThread = 39;
+  optional string parentEvent = 40;
+  optional bool enableOrderBook = 41;
+  optional double liquidityAmm = 42;
+  optional double liquidityClob = 43;
+  optional bool negRisk = 44;
+  optional string negRiskMarketID = 45;
+  optional int32 negRiskFeeBips = 46;
+  optional int32 commentCount = 47;
+  optional string imageOptimized = 48;
+  optional string iconOptimized = 49;
+  optional string featuredImageOptimized = 50;
+  repeated string subEvents = 51;
+  repeated string markets = 52;
+  repeated string series = 53;
+  repeated string categories = 54;
+  repeated string collections = 55;
+  repeated string tags = 56;
+  optional bool cyom = 57;
+  optional google.protobuf.Timestamp closedTime = 58;
+  optional bool showAllOutcomes = 59;
+  optional bool showMarketImages = 60;
+  optional bool automaticallyResolved = 61;
+  optional bool enableNegRisk = 62;
+  optional bool automaticallyActive = 63;
+  optional string eventDate = 64;
+  optional google.protobuf.Timestamp startTime = 65;
+  optional int32 eventWeek = 66;
+  optional string seriesSlug = 67;
+  optional string score = 68;
+  optional string elapsed = 69;
+  optional string period = 70;
+  optional bool live = 71;
+  optional bool ended = 72;
+  optional google.protobuf.Timestamp finishedTimestamp = 73;
+  optional string gmpChartMode = 74;
+  repeated string eventCreators = 75;
+  optional int32 tweetCount = 76;
+  repeated string chats = 77;
+  optional int32 featuredOrder = 78;
+  optional bool estimateValue = 79;
+  optional bool cantEstimate = 80;
+  optional string estimatedValue = 81;
+  repeated string templates = 82;
+  optional double spreadsMainLine = 83;
+  optional double totalsMainLine = 84;
+  optional string carouselMap = 85;
+  optional bool pendingDeployment = 86;
+  optional bool deploying = 87;
+  optional google.protobuf.Timestamp deployingTimestamp = 88;
+  optional google.protobuf.Timestamp scheduledDeploymentTimestamp = 89;
+  optional string gameStatus = 90;
+}
+
+message Tag {
+  string id = 1;
+  optional string label = 2;
+  optional string slug = 3;
+  optional bool forceShow = 4;
+  optional google.protobuf.Timestamp publishedAt = 5;
+  optional int32 createdBy = 6;
+  optional int32 updatedBy = 7;
+  optional google.protobuf.Timestamp createdAt = 8;
+  optional google.protobuf.Timestamp updatedAt = 9;
+  optional bool forceHide = 10;
+  optional bool isCarousel = 11;
 }
