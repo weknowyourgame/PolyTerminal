@@ -477,3 +477,45 @@ message SearchPagination {
   int32 limit = 3;
   int32 total_pages = 4;
 }
+
+message Series {
+  string id = 1;
+  optional string ticker = 2;
+  optional string slug = 3;
+  optional string title = 4;
+  optional string subtitle = 5;
+  optional string seriesType = 6;
+  optional string recurrence = 7;
+  optional string description = 8;
+  optional string image = 9;
+  optional string icon = 10;
+  optional string layout = 11;
+  optional bool active = 12;
+  optional bool closed = 13;
+  optional bool archived = 14;
+  optional bool new = 15;
+  optional bool featured = 16;
+  optional bool restricted = 17;
+  optional bool isTemplate = 18;
+  optional bool templateVariables = 19;
+  optional google.protobuf.Timestamp publishedAt = 20;
+  optional string createdBy = 21;
+  optional string updatedBy = 22;
+  optional google.protobuf.Timestamp createdAt = 23;
+  optional google.protobuf.Timestamp updatedAt = 24;
+  optional bool commentsEnabled = 25;
+  optional string competitive = 26;
+  optional double volume24hr = 27;
+  optional double volume = 28;
+  optional double liquidity = 29;
+  optional google.protobuf.Timestamp startDate = 30;
+  optional string pythTokenID = 31;
+  optional string cgAssetName = 32;
+  optional int32 score = 33;
+  repeated Event events = 34;
+  repeated string collections = 35;
+  repeated string categories = 36;
+  repeated Tag tags = 37;
+  optional int32 commentCount = 38;
+  repeated string chats = 39;
+}
