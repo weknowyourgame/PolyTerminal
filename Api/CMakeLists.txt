@@ -1,12 +1,21 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.18)
 
 project(PolyApi VERSION 0.1)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Find protobuf and gRPC using system packages
+include(FetchContent)
+FetchContent_Declare(
+        httplib
+        GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
+        GIT_TAG        v0.15.3
+)
+FetchContent_MakeAvailable(httplib)
+
+# Find required packages
 find_package(Protobuf REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 # Find gRPC using pkg-config
 find_package(PkgConfig REQUIRED)
@@ -28,33 +37,38 @@ set(pm_clob_grpc_srcs "${CMAKE_CURRENT_BINARY_DIR}/polymarket_clob.grpc.pb.cc")
 set(pm_clob_grpc_hdrs "${CMAKE_CURRENT_BINARY_DIR}/polymarket_clob.grpc.pb.h")
 
 add_custom_command(
-  OUTPUT "${pm_clob_proto_srcs}" "${pm_clob_proto_hdrs}" "${pm_clob_grpc_srcs}" "${pm_clob_grpc_hdrs}"
-  COMMAND ${Protobuf_PROTOC_EXECUTABLE}
-  ARGS --experimental_allow_proto3_optional
-    --grpc_out "${CMAKE_CURRENT_BINARY_DIR}"
-    --cpp_out "${CMAKE_CURRENT_BINARY_DIR}"
-    -I "${pm_proto_path}"
-    --plugin=protoc-gen-grpc="${GRPC_CPP_PLUGIN}"
-    "${pm_clob_proto}"
-  DEPENDS "${pm_clob_proto}")
+        OUTPUT "${pm_clob_proto_srcs}" "${pm_clob_proto_hdrs}" "${pm_clob_grpc_srcs}" "${pm_clob_grpc_hdrs}"
+        COMMAND ${Protobuf_PROTOC_EXECUTABLE}
+        ARGS --experimental_allow_proto3_optional
+        --grpc_out "${CMAKE_CURRENT_BINARY_DIR}"
+        --cpp_out "${CMAKE_CURRENT_BINARY_DIR}"
+        -I "${pm_proto_path}"
+        --plugin=protoc-gen-grpc="${GRPC_CPP_PLUGIN}"
+        "${pm_clob_proto}"
+        DEPENDS "${pm_clob_proto}")
 
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 # Proto library
 add_library(api_proto
-  ${pm_clob_proto_srcs}
-  ${pm_clob_proto_hdrs}
-  ${pm_clob_grpc_srcs}
-  ${pm_clob_grpc_hdrs})
+        ${pm_clob_proto_srcs}
+        ${pm_clob_proto_hdrs}
+        ${pm_clob_grpc_srcs}
+        ${pm_clob_grpc_hdrs})
 
 target_link_libraries(api_proto
-  PkgConfig::grpc++
-  protobuf::libprotobuf)
+        PkgConfig::grpc++
+        protobuf::libprotobuf
+        httplib::httplib
+)
 
 # gRPC server executable
 add_executable(BackendApi main.cpp)
 target_link_libraries(BackendApi
-  api_proto
-  PkgConfig::grpc++
-  protobuf::libprotobuf)
-
+        api_proto
+        PkgConfig::grpc++
+        protobuf::libprotobuf
+        httplib::httplib
+        OpenSSL::SSL
+        OpenSSL::Crypto
+)
