@@ -4,7 +4,7 @@ package polymarket.clob;
 import "google/protobuf/timestamp.proto";
 
 service status {
-  rpc CheckStatus (Empty) returns (ClobApiStatus);
+  rpc checkStatus (Empty) returns (ClobApiStatus);
 }
 
 service sports {
@@ -52,24 +52,11 @@ message ClobApiStatus {
 }
 
 message ListTeamsResponse {
-  int64 id = 1;
-  optional string name = 2;
-  optional string league = 3;
-  optional string record = 4;
-  optional string logo = 5;
-  optional string abbreviation = 6;
-  optional string alias = 7;
-  google.protobuf.Timestamp createdAt = 8;
-  google.protobuf.Timestamp updatedAt = 9;
+  string json_data = 1;
 }
 
 message SportsMetadataResponse {
-  string sport = 1;
-  optional string image = 2;
-  optional string resolution = 3;
-  optional string ordering = 4;
-  optional string tags = 5;
-  optional string series = 6;
+  string json_data = 1;
 }
 
 message ListEventsRequest {
@@ -112,10 +99,12 @@ message GetEventTagsRequest {
 
 message ListEventsResponse {
   repeated Event events = 1;
+  optional string json_data = 2;
 }
 
 message GetEventTagsResponse {
   repeated Tag tags = 1;
+  optional string json_data = 2;
 }
 
 message Event {
@@ -209,6 +198,7 @@ message Event {
   optional google.protobuf.Timestamp deployingTimestamp = 88;
   optional google.protobuf.Timestamp scheduledDeploymentTimestamp = 89;
   optional string gameStatus = 90;
+  optional string json_data = 91;
 }
 
 message Tag {
@@ -271,10 +261,12 @@ message GetMarketTagsRequest {
 
 message ListMarketsResponse {
   repeated Market markets = 1;
+  optional string json_data = 2;
 }
 
 message GetMarketTagsResponse {
   repeated Tag tags = 1;
+  optional string json_data = 2;
 }
 
 message Market {
@@ -414,6 +406,7 @@ message Market {
   optional google.protobuf.Timestamp scheduledDeploymentTimestamp = 134;
   optional bool rfqEnabled = 135;
   optional google.protobuf.Timestamp eventStartTime = 136;
+  optional string json_data = 137;
 }
 
 message ListSeriesRequest {
@@ -436,6 +429,7 @@ message GetSeriesByIdRequest {
 
 message ListSeriesResponse {
   repeated Series series = 1;
+  optional string json_data = 2;
 }
 
 message PublicSearchRequest {
@@ -460,6 +454,7 @@ message PublicSearchResponse {
   repeated Tag tags = 2;
   repeated Profile profiles = 3;
   SearchPagination pagination = 4;
+  optional string json_data = 5;
 }
 
 message Profile {
@@ -518,4 +513,5 @@ message Series {
   repeated Tag tags = 37;
   optional int32 commentCount = 38;
   repeated string chats = 39;
+  optional string json_data = 40;
 }
