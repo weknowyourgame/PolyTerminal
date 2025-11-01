@@ -2,6 +2,7 @@
 #include <memory>
 #include <string>
 #include <grpc++/grpc++.h>
+#include <httplib.h>
 
 #include "polymarket_clob.grpc.pb.h"
 
@@ -13,10 +14,24 @@ using grpc::Status;
 class StatusServiceImpl final : public polymarket::clob::status::Service {
 public:
     grpc::Status CheckStatus(grpc::ServerContext* context, const polymarket::clob::Empty* request, polymarket::clob::ClobApiStatus* response) override {
-        response->set_status("Healthy");
+        try{
+            httplib::SSLClient client("data-api.polymarket.com", 443);
+            auto res = client.Get("/");
+            if(!res) {
+                std::cerr << "Error getting status response" << std::endl;
+                return grpc::Status(grpc::StatusCode::UNAVAILABLE, "No response from data-api.polymarket.com");
+            }
+            if (res->status != 200) {
+                std::cerr << "Error: HTTP status " << res->status << std::endl;
+                return grpc::Status(grpc::StatusCode::UNAVAILABLE, "HTTP error from data-api.polymarket.com: " + std::to_string(res->status));
+            }
 
-        std::cout << "[CheckStatus] Called, returning Healthy" << std::endl;
-        return grpc::Status::OK;
+            response->set_status(res->body);
+            std::cout << "[CheckStatus] Called," << res->body << std::endl;
+            return grpc::Status::OK;
+        } catch (const std::exception& e) {
+            std::cerr << "Exception in CheckStatus: " << e.what() << std::endl;
+            return grpc::Status(grpc::StatusCode::INTERNAL, e.what());}
     }
 };
 
