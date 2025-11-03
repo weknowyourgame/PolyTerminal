@@ -1,0 +1,4 @@
+class CEFManager {
+public:
+
+}

@@ -7,22 +7,11 @@
 #include "include/wrapper/cef_helpers.h"
 #include "client.h"
 
-// Default values if not provided via CMake
-#ifndef DEFAULT_URL
-#define DEFAULT_URL "https://www.chromium.org"
-#endif
-
-#ifndef WINDOW_TITLE
-#define WINDOW_TITLE "CEF Starter"
-#endif
-
-App::App() = default;
+App::App(const std::string& url, const std::string& window_title)
+    : url_(url), window_title_(window_title) {}
 
 void App::OnContextInitialized() {
   CEF_REQUIRE_UI_THREAD();
-
-  CefRefPtr<CefCommandLine> command_line =
-      CefCommandLine::GetGlobalCommandLine();
 
   // Client implements browser-level callbacks.
   CefRefPtr<Client> handler(new Client);
@@ -30,21 +19,16 @@ void App::OnContextInitialized() {
   // Specify CEF browser settings here.
   CefBrowserSettings browser_settings;
 
-  // Determine URL to load.
-  std::string url = command_line->GetSwitchValue("url");
-  if (url.empty()) {
-    // Use default URL from CMake configuration
-    // CMake passes this as a string literal, so use it directly
-    url = DEFAULT_URL;
-  }
-
+  // Use the URL and window title passed from main.cpp
+  std::string url = url_;
+  
   // Information used when creating the native window.
   CefWindowInfo window_info;
 
 #if defined(OS_WIN)
   // On Windows we need to specify certain flags that will be passed to
   // CreateWindowEx().
-  window_info.SetAsPopup(nullptr, WINDOW_TITLE);
+  window_info.SetAsPopup(nullptr, window_title_.c_str());
 #elif defined(CEF_X11)
   // On Linux/X11, create a top-level window
   // CEF will automatically create the window - we just need to provide basic info
@@ -55,6 +39,5 @@ void App::OnContextInitialized() {
   window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
 
   // Create the first browser window using native window mode.
-  CefBrowserHost::CreateBrowser(window_info, handler, url, browser_settings,
-                                nullptr, nullptr);
+  CefBrowserHost::CreateBrowser(window_info, handler, url, browser_settings,nullptr, nullptr);
 }

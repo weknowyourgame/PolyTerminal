@@ -11,34 +11,32 @@
 #if defined(CEF_X11)
 namespace {
 
-int XErrorHandlerImpl(Display* display, XErrorEvent* event) {
-  LOG(WARNING) << "X error received: " << "type " << event->type << ", "
-               << "serial " << event->serial << ", " << "error_code "
-               << static_cast<int>(event->error_code) << ", " << "request_code "
-               << static_cast<int>(event->request_code) << ", " << "minor_code "
-               << static_cast<int>(event->minor_code);
-  return 0;
-}
+  int XErrorHandlerImpl(Display* display, XErrorEvent* event) {
+    LOG(WARNING) << "X error received: " << "type " << event->type << ", "
+                << "serial " << event->serial << ", " << "error_code "
+                << static_cast<int>(event->error_code) << ", " << "request_code "
+                << static_cast<int>(event->request_code) << ", " << "minor_code "
+                << static_cast<int>(event->minor_code);
+    return 0;
+  }
 
-int XIOErrorHandlerImpl(Display* display) {
-  return 0;
-}
+  int XIOErrorHandlerImpl(Display* display) {
+    return 0;
+  }
 
-}  // namespace
+}
 #endif  // defined(CEF_X11)
 
-// Entry point function for all processes.
+// Entry point for all processes.
 NO_STACK_PROTECTOR
 int main(int argc, char* argv[]) {
-  // Provide CEF with command-line arguments.
   CefMainArgs main_args(argc, argv);
 
   // CEF applications have multiple sub-processes (render, GPU, etc) that share
-  // the same executable. This function checks the command-line and, if this is
-  // a sub-process, executes the appropriate logic.
+  // the same executable, if this is a sub-process, execute the appropriate logic.
   int exit_code = CefExecuteProcess(main_args, nullptr, nullptr);
   if (exit_code >= 0) {
-    // The sub-process has completed so return here.
+    // The sub-process has completed, return here.
     return exit_code;
   }
 
@@ -49,11 +47,7 @@ int main(int argc, char* argv[]) {
   XSetIOErrorHandler(XIOErrorHandlerImpl);
 #endif
 
-  // Parse command-line arguments for use in this method.
-  CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
-  command_line->InitFromArgv(argc, argv);
-
-  // Specify CEF global settings here.
+  // Specify CEF global settings.
   CefSettings settings;
 
 // When generating projects with CMake the CEF_USE_SANDBOX value will be defined
@@ -71,9 +65,13 @@ int main(int argc, char* argv[]) {
   // App implements application-level callbacks for the browser process.
   // It will create the first browser instance in OnContextInitialized() after
   // CEF has initialized.
-  CefRefPtr<App> app(new App);
 
-  // Initialize the CEF browser process. May return false if initialization
+  // Default values for the URL and window title.
+  std::string url = "https://www.polymarket.com";
+  std::string window_title = "PolyTerminal";
+  CefRefPtr<App> app(new App(url, window_title));
+
+  // Initialize the CEF browser process, may return false if initialization
   // fails or if early exit is desired (for example, due to process singleton
   // relaunch behavior).
   if (!CefInitialize(main_args, settings, app.get(), nullptr)) {

@@ -1,11 +1,11 @@
-#ifndef CEF_STARTER_CLIENT_H_
-#define CEF_STARTER_CLIENT_H_
+#ifndef CEF_POLYTERMINAL_CLIENT_H_
+#define CEF_POLYTERMINAL_CLIENT_H_
 
 #include <list>
 
 #include "include/cef_client.h"
 
-// Minimal client implementation - only handles browser lifecycle.
+// Minimal client implementation, only handles browser lifecycle.
 class Client : public CefClient, public CefLifeSpanHandler {
  public:
   Client();
@@ -20,14 +20,14 @@ class Client : public CefClient, public CefLifeSpanHandler {
   void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
 
  private:
-  // List of existing browser windows. Only accessed on the CEF UI thread.
+  // List of existing browser windows, only accessed on the CEF UI thread.
   typedef std::list<CefRefPtr<CefBrowser>> BrowserList;
   BrowserList browser_list_;
 
   bool is_closing_ = false;
 
-  // Include the default reference counting implementation.
+  // Default reference counting implementation.
   IMPLEMENT_REFCOUNTING(Client);
 };
 
-#endif  // CEF_STARTER_CLIENT_H_
+#endif  // CEF_POLYTERMINAL_CLIENT_H_

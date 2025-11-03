@@ -11,14 +11,14 @@ Client::~Client() = default;
 void Client::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
 
-    // Add to the list of existing browsers.
+    // Add to the list of existing browsers, only accessed on the CEF UI thread.
     browser_list_.push_back(browser);
 }
 
 bool Client::DoClose(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
 
-    // Closing the main window requires special handling. See the DoClose()
+    // Closing the main window requires special handling, see the DoClose()
     // documentation in the CEF header for a detailed description of this
     // process.
     if (browser_list_.size() == 1) {
@@ -26,7 +26,7 @@ bool Client::DoClose(CefRefPtr<CefBrowser> browser) {
         is_closing_ = true;
     }
 
-    // Allow the close. For windowed browsers this will result in the OS close
+    // Allow the close, for windowed browsers this will result in the OS close
     // event being sent.
     return false;
 }
