@@ -33,7 +33,6 @@ add_library(cef_app_lib STATIC
   cef_app/app.h
   cef_app/client.cpp
   cef_app/client.h
-  cef_app/CEFManager.h
 )
 
 # Set include directories for CEF app
@@ -56,68 +55,14 @@ if(OS_LINUX)
   target_link_libraries(cef_app_lib PRIVATE libcef_lib ${CEF_STANDARD_LIBS})
 endif()
 
-# Disable sandbox (as per cef_app/main.cpp)
+# Disable sandbox
 if(NOT DEFINED USE_SANDBOX)
   set(USE_SANDBOX OFF)
 endif()
 
-# CEF Standalone Executable (optional - for testing)
-if(OS_LINUX)
-  add_executable(cef_app_executable
-    cef_app/main.cpp
-  )
-  
-  # Determine output directory for this target
-  SET_CEF_TARGET_OUT_DIR()
-  set_target_properties(cef_app_executable PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CEF_TARGET_OUT_DIR}
-  )
-  
-  # Apply CEF target properties
-  SET_EXECUTABLE_TARGET_PROPERTIES(cef_app_executable)
-  
-  target_include_directories(cef_app_executable PRIVATE
-    ${CEF_ROOT}
-    ${CMAKE_CURRENT_SOURCE_DIR}/cef_app
-  )
-  
-  target_link_libraries(cef_app_executable PRIVATE
-    cef_app_lib
-    libcef_dll_wrapper
-    libcef_lib
-    ${CEF_STANDARD_LIBS}
-  )
-  
-  # Set rpath for CEF libraries
-  set_target_properties(cef_app_executable PROPERTIES
-    INSTALL_RPATH "$ORIGIN"
-    BUILD_WITH_INSTALL_RPATH TRUE
-  )
-  
-  # Copy CEF binary and resource files to output directory
-  COPY_FILES(cef_app_executable "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
-  COPY_FILES(cef_app_executable "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
-  
-  # Set SUID permissions on chrome-sandbox
-  SET_LINUX_SUID_PERMISSIONS(cef_app_executable "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
-else()
-  # For non-Linux platforms
-  add_executable(cef_app_executable
-    cef_app/main.cpp
-  )
-  
-  SET_EXECUTABLE_TARGET_PROPERTIES(cef_app_executable)
-  
-  target_include_directories(cef_app_executable PRIVATE
-    ${CEF_ROOT}
-    ${CMAKE_CURRENT_SOURCE_DIR}/cef_app
-  )
-  
-  target_link_libraries(cef_app_executable PRIVATE
-    cef_app_lib
-    libcef_dll_wrapper
-  )
-endif()
+# Note: CEF Standalone Executable removed - using CEF as library only
+# CEF components (app.cpp, client.cpp) are available via cef_app_lib
+# for embedding in Qt application
 
 # Main Qt Executable
 add_executable(PolyTerminal 
@@ -139,14 +84,24 @@ target_include_directories(PolyTerminal PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/cef_app
 )
 
-# Qt app may also need CEF libraries if using CEF directly
+# Link CEF libraries to Qt app since we're using CEF directly
 if(OS_LINUX)
-  # Link against libcef if Qt app directly uses CEF APIs
-  # Uncomment the line below if your Qt code calls CEF functions directly
-  # target_link_libraries(PolyTerminal PRIVATE libcef_lib ${CEF_STANDARD_LIBS})
+  target_link_libraries(PolyTerminal PRIVATE 
+    libcef_lib 
+    ${CEF_STANDARD_LIBS}
+    libcef_dll_wrapper
+  )
   
-  # Note: When using CEF from Qt, you'll need to:
-  # 1. Initialize CEF (CefInitialize) from Qt's main
-  # 2. Run CEF message loop in a separate thread or integrate with Qt's event loop
-  # 3. Copy CEF binaries/resources to the Qt executable's output directory if needed
+  # Set rpath for CEF libraries
+  set_target_properties(PolyTerminal PROPERTIES
+    INSTALL_RPATH "$ORIGIN"
+    BUILD_WITH_INSTALL_RPATH TRUE
+  )
+  
+  # Copy CEF binary and resource files to Qt executable's output directory
+  COPY_FILES(PolyTerminal "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
+  COPY_FILES(PolyTerminal "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
+  
+  # Set SUID permissions on chrome-sandbox
+  SET_LINUX_SUID_PERMISSIONS(PolyTerminal "${CMAKE_CURRENT_BINARY_DIR}/chrome-sandbox")
 endif()
