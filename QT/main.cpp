@@ -1,11 +1,9 @@
 #include <QApplication>
-#include <QMainWindow>
-#include <QMenuBar>
-#include <QAction>
 #include <QDebug>
 #include "constants.h"
 #include <QString>
 #include "globalShortcuts.h"
+#include "MainWindow.h"
 
 #include "cef_app/app.h"
 
@@ -68,17 +66,11 @@ int main(int argc, char **argv){
     }
 
     // ===== QT APPLICATION =====
-    QApplication qtApp(argc, argv);  // ← Different name!
-    QMainWindow window;
-    window.resize(1200, 800);
+    QApplication qtApp(argc, argv);
+    
+    // custom MainWindow (handles pages, menu, shortcuts, etc.)
+    MainWindow window;
     window.setWindowFlags(Qt::FramelessWindowHint);
-
-    // MenuBar
-    QMenuBar *menuBar = window.menuBar();
-    QAction *leftButton = menuBar->addAction(QString::fromStdString(Constants::LEFT_BUTTON));
-    QAction *rightButton = menuBar->addAction(QString::fromStdString(Constants::RIGHT_BUTTON));
-    QAction *profileButton = menuBar->addAction(QString::fromStdString(Constants::PROFILE_BUTTON));
-    QAction *settingsButton = menuBar->addAction(QString::fromStdString(Constants::SETTINGS_BUTTON));
 
     // Shortcut Configs
     GlobalKeyFilter *filter = new GlobalKeyFilter(&window);
