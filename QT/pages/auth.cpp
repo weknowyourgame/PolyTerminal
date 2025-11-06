@@ -5,14 +5,14 @@
 #include <QVBoxLayout>
 
 AuthPage::AuthPage(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent),
     titleLabel(nullptr),
     emailField(nullptr),
     passwordField(nullptr),
     loginButton(nullptr),
     signupButton(nullptr),
     errorLabel(nullptr),
-    layout(nullptr),{
+    layout(nullptr){
     setupUI();
 }
 
@@ -42,8 +42,8 @@ void AuthPage::setupUI(){
 
     setLayout(layout);
 
-    connect(loginButton, &QPushButton::clicked, this, &AuthPage::attemptLogin);
-    connect(signupButton, &QPushButton::clicked, this, &AuthPage::attemptsignup);
+    connect(loginButton, &QPushButton::clicked, this, &AuthPage::onLoginClicked);
+    connect(signupButton, &QPushButton::clicked, this, &AuthPage::onSignupClicked);
 }
 
 void AuthPage::onLoginClicked(){
@@ -58,6 +58,6 @@ void AuthPage::attemptLogin(){
     // TODO: Implement mysql & grpc login
 }
 
-void AuthPage::attemptsignup(){
+void AuthPage::attemptSignup(){
     // TODO: Implement mysql & grpc signup
 }

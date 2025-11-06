@@ -1,3 +1,6 @@
+#ifndef EVENTPAGE_H
+#define EVENTPAGE_H
+
 #include <QWidget>
 #include <QTabWidget>
 #include <QVBoxLayout>
@@ -30,3 +33,5 @@ private:
     void createSearchTab();
     void createCategoriesTab();
 };
+
+#endif // EVENTPAGE_H

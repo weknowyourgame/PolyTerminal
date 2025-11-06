@@ -1,3 +1,6 @@
+#ifndef DASHBOARDPAGE_H
+#define DASHBOARDPAGE_H
+
 #include <QWidget>
 #include <QTabWidget>
 #include <QVBoxLayout>
@@ -38,3 +41,5 @@ private:
     void createWorldTab();
     void createTechTab();
 };
+
+#endif // DASHBOARDPAGE_H

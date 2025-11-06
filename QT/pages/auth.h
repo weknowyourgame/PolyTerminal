@@ -1,3 +1,6 @@
+#ifndef AUTHPAGE_H
+#define AUTHPAGE_H
+
 #include <QWidget>
 #include <QLabel>
 #include <QLineEdit>
@@ -36,3 +39,5 @@ private:
     void attemptLogin();
     void attemptSignup();
 };
+
+#endif // AUTHPAGE_H

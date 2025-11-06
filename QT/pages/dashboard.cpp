@@ -5,19 +5,19 @@
 #include <QVBoxLayout>
 
 DashboardPage::DashboardPage(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent),
     tabWidget(nullptr),
     trendingTab(nullptr),
     guideTab(nullptr),
     newsTab(nullptr),
-    politicalTab(nullptr),
+    politicsTab(nullptr),
     worldTab(nullptr),
     techTab(nullptr),
-    layout(nullptr),{
+    layout(nullptr){
     setupUI();
 }
 
-DashboardPage::~DashboardPage()
+DashboardPage::~DashboardPage(){}
 
 void DashboardPage::setupUI(){
     layout = new QVBoxLayout(this);
@@ -30,6 +30,8 @@ void DashboardPage::setupUI(){
     createSportsTab();
     createWorldTab();
     createTechTab();
+
+    layout->addWidget(tabWidget);
 };
 
 void DashboardPage::createTrendingTab(){}
@@ -45,3 +47,5 @@ void DashboardPage::createWorldTab(){}
 void DashboardPage::createSportsTab(){}
 
 void DashboardPage::createTechTab(){}
+
+void DashboardPage::onTabChanged(int index){}

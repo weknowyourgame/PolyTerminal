@@ -65,13 +65,17 @@ endif()
 # for embedding in Qt application
 
 # Main Qt Executable
-add_executable(PolyTerminal 
-  main.cpp 
-  globalShortcuts.cpp 
+add_executable(PolyTerminal
+  main.cpp
+  globalShortcuts.cpp
   globalShortcuts.h
-  MainWindow.cpp 
+  MainWindow.cpp
   MainWindow.h
-  constants.h)
+  constants.h
+  pages/auth.cpp
+  pages/dashboard.cpp
+  pages/portfolio.cpp
+  pages/event.cpp)
 
 target_link_libraries(PolyTerminal PRIVATE 
   Qt6::Widgets

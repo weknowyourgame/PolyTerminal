@@ -1,3 +1,6 @@
+#ifndef PORTFOLIOPAGE_H
+#define PORTFOLIOPAGE_H
+
 #include <QWidget>
 #include <QTabWidget>
 #include <QVBoxLayout>
@@ -33,4 +36,6 @@ private:
     void createHistoryTab();
     void createSettingsTab();
 };
+
+#endif // PORTFOLIOPAGE_H
 
