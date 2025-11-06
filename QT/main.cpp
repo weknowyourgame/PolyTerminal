@@ -68,7 +68,7 @@ int main(int argc, char **argv){
     // ===== QT APPLICATION =====
     QApplication qtApp(argc, argv);
     
-    // custom MainWindow (handles pages, menu, shortcuts, etc.)
+    // MainWindow instance (handles pages, menu, shortcuts, etc.)
     MainWindow window;
     window.setWindowFlags(Qt::FramelessWindowHint);
 
