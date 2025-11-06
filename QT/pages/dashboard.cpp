@@ -1,16 +1,47 @@
-class DashboardPage : public QWidget {
-    Q_OBJECT
-public:
-    DashboardPage(QWidget *parent = nullptr);
-    ~DashboardPage();
+#include "dashboard.h"
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QVBoxLayout>
 
-private:
-    QTabWidget *tabWidget;
-    QWidget *trendingTab;
-    QWidget *guideTab;
-    QWidget *newsTab;
-    QWidget *politicsTab;
-    QWidget *sportsTab;
-    QWidget *worldTab;
-    QWidget *techTab;
+DashboardPage::DashboardPage(QWidget *parent)
+    : QWidget(parent)
+    tabWidget(nullptr),
+    trendingTab(nullptr),
+    guideTab(nullptr),
+    newsTab(nullptr),
+    politicalTab(nullptr),
+    worldTab(nullptr),
+    techTab(nullptr),
+    layout(nullptr),{
+    setupUI();
+}
+
+DashboardPage::~DashboardPage()
+
+void DashboardPage::setupUI(){
+    layout = new QVBoxLayout(this);
+    tabWidget = new QTabWidget(this);
+
+    createTrendingTab();
+    createGuideTab();
+    createNewsTab();
+    createPoliticsTab();
+    createSportsTab();
+    createWorldTab();
+    createTechTab();
 };
+
+void DashboardPage::createTrendingTab(){}
+
+void DashboardPage::createGuideTab(){}
+
+void DashboardPage::createNewsTab(){}
+
+void DashboardPage::createPoliticsTab(){}
+
+void DashboardPage::createWorldTab(){}
+
+void DashboardPage::createSportsTab(){}
+
+void DashboardPage::createTechTab(){}
