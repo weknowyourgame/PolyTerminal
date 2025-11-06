@@ -24,7 +24,7 @@ void AuthPage::setupUI(){
     emailField->setPlaceholderText("john@gmail.com");
     passwordField = new QLineEdit;
     passwordField->setPlaceholderText("*******");
-    passwordField->setValidator(new QValidator<QLineEdit*>(this))
+    passwordField->setEchoMode(QLineEdit::Password);
 
     loginButton = new QPushButton("Login", this);
     signupButton = new QPushButton("Signup", this);
@@ -55,8 +55,9 @@ void AuthPage::onSignupClicked(){
 }
 
 void AuthPage::attemptLogin(){
-
+    // TODO: Implement mysql & grpc login
 }
 
 void AuthPage::attemptsignup(){
+    // TODO: Implement mysql & grpc signup
 }
