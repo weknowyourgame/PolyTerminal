@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package databaselayer.auth;
+import "google/protobuf/timestamp.proto";
+
+service auth {
+  rpc login (Credentials) returns (LoginStatus);
+  rpc signup (Credentials) returns (SignupStatus);
+}
+
+message Credentials {
+    string email = 1;
+    string password = 2;
+}
+
+message LoginStatus {
+    int statusCode;
+    string statusMsg;
+}
+
+message SignupStatus {
+    int statusCode;
+    string statusMsg;
+}

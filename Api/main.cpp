@@ -5,6 +5,7 @@
 #include <httplib.h>
 
 #include "polymarket_clob.grpc.pb.h"
+#include "database_layer.grpc.pb.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -336,6 +337,29 @@ public:
     }
 };
 
+class AuthServiceImpl final: public database::auth::auth::Service {
+    public:
+        grpc::Status login(grpc::ServerContext* context, const database::auth::auth::Credentials* request, database::auth::LoginStatus* response) override {
+            try {
+                // Check mysql instance for cred.
+
+            } catch (const std::exception& e) {
+                std::cerr << "Exception in Login: " << e.what() << std::endl;
+                return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
+            }
+    }
+
+        grpc::Status login(grpc::ServerContext* context, const database::auth::auth::Credentials* request, database::auth::SignupStatus* response) override {
+            try {
+                // Check mysql instance for cred.
+
+            } catch (const std::exception& e) {
+                std::cerr << "Exception in SignUp: " << e.what() << std::endl;
+                return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
+            }
+    }
+}
+
 void RunServer() {
     std::string server_address("0.0.0.0:8888");
     StatusServiceImpl status_service;
@@ -344,6 +368,7 @@ void RunServer() {
     MarketsServiceImpl markets_service;
     SeriesServiceImpl series_service;
     SearchServiceImpl search_service;
+    AuthServiceImpl   auth_service;
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.
@@ -356,7 +381,8 @@ void RunServer() {
     builder.RegisterService(&markets_service);
     builder.RegisterService(&series_service);
     builder.RegisterService(&search_service);
-    
+    builder.RegisterService(&auth_service);
+
     // Finally assemble the server.
     std::unique_ptr<Server> server(builder.BuildAndStart());
     std::cout << "Server listening on " << server_address << std::endl;

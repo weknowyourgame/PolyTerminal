@@ -13,6 +13,9 @@ class AuthPage : public QWidget {
 public:
     AuthPage(QWidget *parent = nullptr);
     ~AuthPage();
+    void attemptLogin();
+    void attemptSignup();
+
 // signals for MainWindow to connect to
 signals:        
     void loginSuccessful();
@@ -36,8 +39,6 @@ private:
     QVBoxLayout *layout;
 
     void setupUI();
-    void attemptLogin();
-    void attemptSignup();
 };
 
 #endif // AUTHPAGE_H
