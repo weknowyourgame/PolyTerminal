@@ -6,10 +6,10 @@ services:
     container_name: my-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: mypass
-      MYSQL_DATABASE: mydb
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: mypassword
+      MYSQL_ROOT_PASSWORD: PolyTerminal
+      MYSQL_DATABASE: PolyTerminal
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: PolyTerminal
     ports:
       - "3306:3306"
     volumes:
