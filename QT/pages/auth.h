@@ -13,14 +13,15 @@ class AuthPage : public QWidget {
 public:
     AuthPage(QWidget *parent = nullptr);
     ~AuthPage();
-    void attemptLogin();
-    void attemptSignup();
+    bool attemptLogin();
+    bool attemptSignup();
 
 // signals for MainWindow to connect to
 signals:        
     void loginSuccessful();
     void loginFailed(const QString& error);
-
+    void signupSuccessful();
+    void signupFailed(const QString& error);
 // methods connected to UI signals
 private slots:  
     void onLoginClicked();

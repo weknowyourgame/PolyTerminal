@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     
     connect(authPage, &AuthPage::loginSuccessful,
             this, &MainWindow::onLoginSuccessful);
+    connect(authPage, &AuthPage::signupSuccessful,
+            this, &MainWindow::onLoginSuccessful);
     
     // authentication page as default
     setCentralWidget(authPage);

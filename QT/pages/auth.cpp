@@ -3,6 +3,9 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <httplib.h>
+
+const char* BACKEND_URL = "http://localhost:8888";
 
 AuthPage::AuthPage(QWidget *parent)
     : QWidget(parent),
@@ -54,10 +57,34 @@ void AuthPage::onSignupClicked(){
     attemptSignup();
 }
 
-void AuthPage::attemptLogin(){
-    // TODO: Implement mysql & grpc login
+bool AuthPage::attemptLogin(){
+    errorLabel->clear();
+    httplib::Client client(BACKEND_URL);
+    std::string body = "email=" + emailField->text().toStdString() + "&password=" + passwordField->text().toStdString();
+    auto res = client.Post("/login", body, "application/x-www-form-urlencoded");
+    if (res && res->status == 200) {
+        emit loginSuccessful();
+        return true;
+    } else {
+        QString errorMsg = res ? QString::fromStdString(res->body) : "Connection failed";
+        errorLabel->setText(errorMsg);
+        emit loginFailed(errorMsg);
+        return false;
+    }
 }
 
-void AuthPage::attemptSignup(){
-    // TODO: Implement mysql & grpc signup
+bool AuthPage::attemptSignup(){
+    errorLabel->clear();
+    httplib::Client client(BACKEND_URL);
+    std::string body = "email=" + emailField->text().toStdString() + "&password=" + passwordField->text().toStdString();
+    auto res = client.Post("/signup", body, "application/x-www-form-urlencoded");
+    if (res && res->status == 200) {
+        emit signupSuccessful();
+        return true;
+    } else {
+        QString errorMsg = res ? QString::fromStdString(res->body) : "Connection failed";
+        errorLabel->setText(errorMsg);
+        emit signupFailed(errorMsg);
+        return false;
+    }
 }

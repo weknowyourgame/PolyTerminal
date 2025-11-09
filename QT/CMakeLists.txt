@@ -14,6 +14,15 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+# Fetch httplib
+include(FetchContent)
+FetchContent_Declare(
+    httplib
+    GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
+    GIT_TAG        v0.15.3
+)
+FetchContent_MakeAvailable(httplib)
+
 # CEF_ROOT setup
 set(CEF_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party/cef_binary_141.0.11+g7e73ac4+chromium-141.0.7390.123_linux64")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
@@ -80,6 +89,7 @@ add_executable(PolyTerminal
 target_link_libraries(PolyTerminal PRIVATE 
   Qt6::Widgets
   cef_app_lib
+  httplib::httplib
 )
 
 # Include CEF headers for Qt app if needed
