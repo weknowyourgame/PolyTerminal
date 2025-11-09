@@ -3,6 +3,10 @@
 #include <string>
 #include <grpc++/grpc++.h>
 #include <httplib.h>
+#include <mysql_driver.h>
+#include <mysql_connection.h>
+#include <cppconn/prepared_statement.h>
+#include "database.h"
 
 #include "polymarket_clob.grpc.pb.h"
 #include "database_layer.grpc.pb.h"
@@ -337,28 +341,46 @@ public:
     }
 };
 
-class AuthServiceImpl final: public database::auth::auth::Service {
-    public:
-        grpc::Status login(grpc::ServerContext* context, const database::auth::auth::Credentials* request, database::auth::LoginStatus* response) override {
-            try {
-                // Check mysql instance for cred.
+class AuthServiceImpl final : public databaselayer::auth::auth::Service {
+private:
+    DatabaseService databaseService;
 
+public:
+    AuthServiceImpl() : databaseService("localhost", "admin", "PolyTerminal", "PolyTerminal") {}
+        grpc::Status signup(grpc::ServerContext* context, const databaselayer::auth::Credentials* request, databaselayer::auth::SignupStatus* response) override {
+            try {
+                if (databaseService.SignUp(request->email(), request->password())) {
+                    response->set_statuscode(200);
+                    response->set_statusmsg("Signup successful");
+                    return grpc::Status::OK;
+                } else {
+                    response->set_statuscode(500);
+                    response->set_statusmsg("Signup failed");
+                    return grpc::Status(grpc::StatusCode::INTERNAL, "Signup failed");
+                }
+            } catch (const std::exception& e) {
+                std::cerr << "Exception in Signup: " << e.what() << std::endl;
+                return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
+            }
+        }
+
+        grpc::Status login(grpc::ServerContext* context, const databaselayer::auth::Credentials* request, databaselayer::auth::LoginStatus* response) override {
+            try {
+                if (databaseService.LoginUser(request->email(), request->password())) {
+                    response->set_statuscode(200);
+                    response->set_statusmsg("Login successful");
+                    return grpc::Status::OK;
+                } else {
+                    response->set_statuscode(401);
+                    response->set_statusmsg("Login failed");
+                    return grpc::Status(grpc::StatusCode::UNAUTHENTICATED, "Login failed");
+                }
             } catch (const std::exception& e) {
                 std::cerr << "Exception in Login: " << e.what() << std::endl;
                 return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
             }
-    }
-
-        grpc::Status login(grpc::ServerContext* context, const database::auth::auth::Credentials* request, database::auth::SignupStatus* response) override {
-            try {
-                // Check mysql instance for cred.
-
-            } catch (const std::exception& e) {
-                std::cerr << "Exception in SignUp: " << e.what() << std::endl;
-                return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
-            }
-    }
-}
+        }
+};
 
 void RunServer() {
     std::string server_address("0.0.0.0:8888");

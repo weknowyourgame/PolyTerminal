@@ -47,6 +47,25 @@ add_custom_command(
         "${pm_clob_proto}"
         DEPENDS "${pm_clob_proto}")
 
+# Proto compilation for database layer
+get_filename_component(db_layer_proto "${CMAKE_CURRENT_SOURCE_DIR}/database_layer.proto" ABSOLUTE)
+
+set(db_layer_proto_srcs "${CMAKE_CURRENT_BINARY_DIR}/database_layer.pb.cc")
+set(db_layer_proto_hdrs "${CMAKE_CURRENT_BINARY_DIR}/database_layer.pb.h")
+set(db_layer_grpc_srcs "${CMAKE_CURRENT_BINARY_DIR}/database_layer.grpc.pb.cc")
+set(db_layer_grpc_hdrs "${CMAKE_CURRENT_BINARY_DIR}/database_layer.grpc.pb.h")
+
+add_custom_command(
+        OUTPUT "${db_layer_proto_srcs}" "${db_layer_proto_hdrs}" "${db_layer_grpc_srcs}" "${db_layer_grpc_hdrs}"
+        COMMAND ${Protobuf_PROTOC_EXECUTABLE}
+        ARGS --experimental_allow_proto3_optional
+        --grpc_out "${CMAKE_CURRENT_BINARY_DIR}"
+        --cpp_out "${CMAKE_CURRENT_BINARY_DIR}"
+        -I "${pm_proto_path}"
+        --plugin=protoc-gen-grpc="${GRPC_CPP_PLUGIN}"
+        "${db_layer_proto}"
+        DEPENDS "${db_layer_proto}")
+
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 # Proto library
@@ -54,7 +73,11 @@ add_library(api_proto
         ${pm_clob_proto_srcs}
         ${pm_clob_proto_hdrs}
         ${pm_clob_grpc_srcs}
-        ${pm_clob_grpc_hdrs})
+        ${pm_clob_grpc_hdrs}
+        ${db_layer_proto_srcs}
+        ${db_layer_proto_hdrs}
+        ${db_layer_grpc_srcs}
+        ${db_layer_grpc_hdrs})
 
 target_link_libraries(api_proto
         PkgConfig::grpc++
@@ -63,7 +86,7 @@ target_link_libraries(api_proto
 )
 
 # gRPC server executable
-add_executable(BackendApi main.cpp)
+add_executable(BackendApi main.cpp database.cpp)
 target_link_libraries(BackendApi
         api_proto
         PkgConfig::grpc++
@@ -71,4 +94,5 @@ target_link_libraries(BackendApi
         httplib::httplib
         OpenSSL::SSL
         OpenSSL::Crypto
+        mysqlcppconn
 )

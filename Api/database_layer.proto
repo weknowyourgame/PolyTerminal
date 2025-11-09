@@ -14,11 +14,11 @@ message Credentials {
 }
 
 message LoginStatus {
-    int statusCode;
-    string statusMsg;
+    int32 statusCode = 1;
+    string statusMsg = 2;
 }
 
 message SignupStatus {
-    int statusCode;
-    string statusMsg;
+    int32 statusCode = 1;
+    string statusMsg = 2;
 }
