@@ -84,7 +84,9 @@ add_executable(PolyTerminal
   pages/auth.cpp
   pages/dashboard.cpp
   pages/portfolio.cpp
-  pages/event.cpp)
+  pages/event.cpp
+  tabs/trendingTab.cpp
+  component/card.cpp)
 
 target_link_libraries(PolyTerminal PRIVATE 
   Qt6::Widgets

@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QTabWidget>
 #include <QVBoxLayout>
+#include <QLabel>
+#include "../tabs/trendingTab.h"
 
 // DashboardPage - Main app page with actual tabs for different categories
 class DashboardPage : public QWidget {
@@ -21,9 +23,9 @@ private slots:
 
 private:
     // UI Elements - QTabWidget with QWidget tabs
+    QLabel *welcomeLabel;
     QTabWidget *tabWidget;
-    QWidget *trendingTab;
-    QWidget *guideTab;
+    TrendingTab *trendingTab;
     QWidget *newsTab;
     QWidget *politicsTab;
     QWidget *sportsTab;

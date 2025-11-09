@@ -4,11 +4,15 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+#include "../tabs/trendingTab.h"
+
+#include <QTabWidget>
+
 DashboardPage::DashboardPage(QWidget *parent)
     : QWidget(parent),
+    welcomeLabel(nullptr),
     tabWidget(nullptr),
     trendingTab(nullptr),
-    guideTab(nullptr),
     newsTab(nullptr),
     politicsTab(nullptr),
     worldTab(nullptr),
@@ -22,30 +26,48 @@ DashboardPage::~DashboardPage(){}
 void DashboardPage::setupUI(){
     layout = new QVBoxLayout(this);
     tabWidget = new QTabWidget(this);
-
+    welcomeLabel = new QLabel("PolyTerminal");
+    welcomeLabel->setStyleSheet("font-size: 24px; font-weight: bold;");
     createTrendingTab();
-    createGuideTab();
     createNewsTab();
     createPoliticsTab();
     createSportsTab();
     createWorldTab();
     createTechTab();
 
+    layout->addWidget(welcomeLabel);
     layout->addWidget(tabWidget);
 };
 
-void DashboardPage::createTrendingTab(){}
+void DashboardPage::createTrendingTab(){
+    trendingTab = new TrendingTab(this);
+    tabWidget->addTab(trendingTab, "Trending");
+}
 
-void DashboardPage::createGuideTab(){}
 
-void DashboardPage::createNewsTab(){}
+void DashboardPage::createNewsTab(){
+    newsTab = new QWidget(this);
+    tabWidget->addTab(newsTab, "News");
+}
 
-void DashboardPage::createPoliticsTab(){}
+void DashboardPage::createPoliticsTab(){
+    politicsTab = new QWidget(this);
+    tabWidget->addTab(politicsTab, "Politics");
+}
 
-void DashboardPage::createWorldTab(){}
+void DashboardPage::createWorldTab(){
+    worldTab = new QWidget(this);
+    tabWidget->addTab(worldTab, "World");
+}
 
-void DashboardPage::createSportsTab(){}
+void DashboardPage::createSportsTab(){
+    sportsTab = new QWidget(this);
+    tabWidget->addTab(sportsTab, "Sports");
+}
 
-void DashboardPage::createTechTab(){}
+void DashboardPage::createTechTab(){
+    techTab = new QWidget(this);
+    tabWidget->addTab(techTab, "Tech");
+}
 
 void DashboardPage::onTabChanged(int index){}
