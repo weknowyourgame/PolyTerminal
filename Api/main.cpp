@@ -1,11 +1,14 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <thread>
+#include <map>
 #include <grpc++/grpc++.h>
 #include <httplib.h>
 #include <mysql_driver.h>
 #include <mysql_connection.h>
 #include <cppconn/prepared_statement.h>
+#include <sstream>
 #include "database.h"
 
 #include "polymarket_clob.grpc.pb.h"
@@ -352,14 +355,17 @@ public:
                 if (databaseService.SignUp(request->email(), request->password())) {
                     response->set_statuscode(200);
                     response->set_statusmsg("Signup successful");
+                    std::cout << "[signup] Signup successful" << std::endl;
                     return grpc::Status::OK;
                 } else {
                     response->set_statuscode(500);
                     response->set_statusmsg("Signup failed");
+                    std::cout << "[signup] Signup failed" << std::endl;
                     return grpc::Status(grpc::StatusCode::INTERNAL, "Signup failed");
                 }
             } catch (const std::exception& e) {
                 std::cerr << "Exception in Signup: " << e.what() << std::endl;
+                std::cout << "[signup] Exception: " << e.what() << std::endl;
                 return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
             }
         }
@@ -369,21 +375,129 @@ public:
                 if (databaseService.LoginUser(request->email(), request->password())) {
                     response->set_statuscode(200);
                     response->set_statusmsg("Login successful");
+                    std::cout << "[login] Login successful" << std::endl;
                     return grpc::Status::OK;
                 } else {
                     response->set_statuscode(401);
                     response->set_statusmsg("Login failed");
+                    std::cout << "[login] Login failed" << std::endl;
                     return grpc::Status(grpc::StatusCode::UNAUTHENTICATED, "Login failed");
                 }
             } catch (const std::exception& e) {
                 std::cerr << "Exception in Login: " << e.what() << std::endl;
+                std::cout << "[login] Exception: " << e.what() << std::endl;
                 return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
             }
         }
 };
 
+// Helper function to URL decode
+std::string urlDecode(const std::string& str) {
+    std::string result;
+    for (size_t i = 0; i < str.length(); ++i) {
+        if (str[i] == '+') {
+            result += ' ';
+        } else if (str[i] == '%' && i + 2 < str.length()) {
+            int value;
+            std::istringstream is(str.substr(i + 1, 2));
+            if (is >> std::hex >> value) {
+                result += static_cast<char>(value);
+                i += 2;
+            } else {
+                result += str[i];
+            }
+        } else {
+            result += str[i];
+        }
+    }
+    return result;
+}
+
+// Helper function to parse form data
+std::map<std::string, std::string> parseFormData(const std::string& body) {
+    std::map<std::string, std::string> params;
+    std::istringstream iss(body);
+    std::string pair;
+    
+    while (std::getline(iss, pair, '&')) {
+        size_t pos = pair.find('=');
+        if (pos != std::string::npos) {
+            std::string key = urlDecode(pair.substr(0, pos));
+            std::string value = urlDecode(pair.substr(pos + 1));
+            params[key] = value;
+        }
+    }
+    return params;
+}
+
+// HTTP Server function
+void RunHttpServer(DatabaseService* dbService) {
+    httplib::Server svr;
+    
+    // Login endpoint
+    svr.Post("/login", [dbService](const httplib::Request& req, httplib::Response& res) {
+        std::cout << "[HTTP] Login request received" << std::endl;
+        auto params = parseFormData(req.body);
+        
+        if (params.find("email") == params.end() || params.find("password") == params.end()) {
+            res.status = 400;
+            res.set_content("Missing email or password", "text/plain");
+            return;
+        }
+        
+        std::string email = params["email"];
+        std::string password = params["password"];
+        
+        if (dbService->LoginUser(email, password)) {
+            res.status = 200;
+            res.set_content("Login successful", "text/plain");
+            std::cout << "[HTTP] Login successful for: " << email << std::endl;
+        } else {
+            res.status = 401;
+            res.set_content("Login failed", "text/plain");
+            std::cout << "[HTTP] Login failed for: " << email << std::endl;
+        }
+    });
+    
+    // Signup endpoint
+    svr.Post("/signup", [dbService](const httplib::Request& req, httplib::Response& res) {
+        std::cout << "[HTTP] Signup request received" << std::endl;
+        auto params = parseFormData(req.body);
+        
+        if (params.find("email") == params.end() || params.find("password") == params.end()) {
+            res.status = 400;
+            res.set_content("Missing email or password", "text/plain");
+            return;
+        }
+        
+        std::string email = params["email"];
+        std::string password = params["password"];
+        
+        if (dbService->SignUp(email, password)) {
+            res.status = 200;
+            res.set_content("Signup successful", "text/plain");
+            std::cout << "[HTTP] Signup successful for: " << email << std::endl;
+        } else {
+            res.status = 500;
+            res.set_content("Signup failed", "text/plain");
+            std::cout << "[HTTP] Signup failed for: " << email << std::endl;
+        }
+    });
+    
+    std::cout << "HTTP Server listening on 0.0.0.0:8888" << std::endl;
+    svr.listen("0.0.0.0", 8888);
+}
+
 void RunServer() {
-    std::string server_address("0.0.0.0:8888");
+    // Create shared database service
+    DatabaseService dbService("localhost", "admin", "PolyTerminal", "PolyTerminal");
+    
+    // Start HTTP server in a separate thread
+    std::thread httpThread([&dbService]() {
+        RunHttpServer(&dbService);
+    });
+    
+    std::string grpc_address("0.0.0.0:8889");
     StatusServiceImpl status_service;
     SportsServiceImpl sports_service;
     EventsServiceImpl events_service;
@@ -393,8 +507,7 @@ void RunServer() {
     AuthServiceImpl   auth_service;
 
     ServerBuilder builder;
-    // Listen on the given address without any authentication mechanism.
-    builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
+    builder.AddListeningPort(grpc_address, grpc::InsecureServerCredentials());
     
     // Register all services
     builder.RegisterService(&status_service);
@@ -405,13 +518,12 @@ void RunServer() {
     builder.RegisterService(&search_service);
     builder.RegisterService(&auth_service);
 
-    // Finally assemble the server.
     std::unique_ptr<Server> server(builder.BuildAndStart());
-    std::cout << "Server listening on " << server_address << std::endl;
+    std::cout << "gRPC Server listening on " << grpc_address << std::endl;
 
-    // Wait for the server to shutdown. Note that some other thread must be
-    // responsible for shutting down the server for this call to ever return.
+    // Wait for the server to shutdown
     server->Wait();
+    httpThread.join();
 }
 
 int main(int argc, char** argv) {
