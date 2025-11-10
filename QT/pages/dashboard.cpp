@@ -13,6 +13,9 @@
 
 #include <QTabWidget>
 #include <QScrollArea>
+#include <QDebug>
+#include <httplib.h>
+#include "../component/card.h"
 
 DashboardPage::DashboardPage(QWidget *parent)
     : QWidget(parent),
@@ -24,7 +27,10 @@ DashboardPage::DashboardPage(QWidget *parent)
     worldTab(nullptr),
     sportsTab(nullptr),
     techTab(nullptr),
-    layout(nullptr){
+    layout(nullptr),
+    searchResultsWidget(nullptr),
+    mainScrollArea(nullptr),
+    searchResultsLayout(nullptr){
     setupUI();
 }
 
@@ -41,6 +47,9 @@ void DashboardPage::setupUI(){
     createSportsTab();
     createWorldTab();
     createTechTab();
+    createSearchBar();
+
+    layout->addWidget(searchBar);
 
     QWidget *contentWidget = new QWidget(this);
     QVBoxLayout *contentLayout = new QVBoxLayout(contentWidget);
@@ -48,12 +57,39 @@ void DashboardPage::setupUI(){
     contentLayout->addWidget(tabWidget);
     contentLayout->addStretch(1);
 
-    QScrollArea *scrollArea = new QScrollArea(this);
-    scrollArea->setWidgetResizable(true);
-    scrollArea->setWidget(contentWidget);
+    mainScrollArea = new QScrollArea(this);
+    mainScrollArea->setWidgetResizable(true);
+    mainScrollArea->setWidget(contentWidget);
 
-    layout->addWidget(scrollArea);
+    QWidget *searchContentWidget = new QWidget(this);
+    searchResultsLayout = new QVBoxLayout(searchContentWidget);
+    QLabel *searchLabel = new QLabel("Search Results", searchContentWidget);
+    searchLabel->setObjectName("SearchResultsLabel");
+    searchLabel->setStyleSheet("font-size: 20px; font-weight: bold; padding: 20px;");
+    searchResultsLayout->addWidget(searchLabel);
+    searchResultsLayout->addStretch(1);
+    
+    QScrollArea *searchScrollArea = new QScrollArea(this);
+    searchScrollArea->setWidgetResizable(true);
+    searchScrollArea->setWidget(searchContentWidget);
+    
+    searchResultsWidget = searchScrollArea;
+    
+    // Initially hide search results, show main content
+    searchResultsWidget->hide();
+    
+    layout->addWidget(mainScrollArea);
+    layout->addWidget(searchResultsWidget);
 };
+
+void DashboardPage::createSearchBar(){
+    searchBar = new QLineEdit(this);
+    searchBar->setPlaceholderText("Search");
+    searchBar->setStyleSheet("font-size: 16px;");
+    layout->addWidget(searchBar);
+    
+    connect(searchBar, &QLineEdit::textChanged, this, &DashboardPage::onSearchChanged);
+}
 
 void DashboardPage::createTrendingTab(){
     trendingTab = new TrendingTab(this);
@@ -87,3 +123,57 @@ void DashboardPage::createTechTab(){
 }
 
 void DashboardPage::onTabChanged(int index){}
+
+void DashboardPage::onSearchChanged(const QString& text){
+    if (text.isEmpty()) {
+        showMainContent();
+    } else {
+        showSearchResults();
+        
+        httplib::Client client("http://localhost:8888");
+        auto res = client.Get("/search?q=" + text.toStdString());
+        if (res && res->status == 200) {
+            createSearchResultsCard(res->body);
+        }
+    }
+}
+
+void DashboardPage::showSearchResults(){
+    mainScrollArea->hide();
+    searchResultsWidget->show();
+}
+
+void DashboardPage::showMainContent(){
+    searchResultsWidget->hide();
+    mainScrollArea->show();
+}
+
+void DashboardPage::createSearchResultsCard(const std::string& body){
+    // Clear existing cards (except the label at index 0)
+    while (searchResultsLayout->count() > 1) {
+        QLayoutItem* item = searchResultsLayout->takeAt(1);
+        if (item) {
+            if (item->widget()) {
+                delete item->widget();
+            }
+            delete item;
+        }
+    }
+    
+    // qDebug() << "Search results JSON:" << QString::fromStdString(body);
+    
+    // placeholder cards for testing
+    for (int i = 0; i < 5; i++){
+        Card *newCard = new Card(
+            QString("Search Result %1").arg(i + 1),
+            "Description from search results...",
+            "",
+            "0.23",
+            "0.77",
+            this
+        );
+        searchResultsLayout->insertWidget(searchResultsLayout->count() - 1, newCard);
+    }
+    
+    searchResultsLayout->addStretch(1);
+}
