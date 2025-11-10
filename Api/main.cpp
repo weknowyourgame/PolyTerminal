@@ -3,6 +3,7 @@
 #include <string>
 #include <thread>
 #include <map>
+#include <cctype>
 #include <grpc++/grpc++.h>
 #include <httplib.h>
 #include <mysql_driver.h>
@@ -324,7 +325,7 @@ public:
     grpc::Status publicSearch(grpc::ServerContext* context, const polymarket::clob::PublicSearchRequest* request, polymarket::clob::PublicSearchResponse* response) override {
         try{
             httplib::SSLClient client("gamma-api.polymarket.com", 443);
-            std::string path = "/search?q=" + request->q();
+            std::string path = "/public-search?q=" + request->q();
             auto res = client.Get(path.c_str());
 
             if(!res) {
@@ -390,6 +391,20 @@ public:
             }
         }
 };
+
+std::string urlEncode(const std::string& str) {
+    std::string result;
+    for (unsigned char c : str) {
+        if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+            result += c;
+        } else {
+            result += '%';
+            result += "0123456789ABCDEF"[c >> 4];
+            result += "0123456789ABCDEF"[c & 0x0F];
+        }
+    }
+    return result;
+}
 
 // Helper function to URL decode
 std::string urlDecode(const std::string& str) {
@@ -482,6 +497,333 @@ void RunHttpServer(DatabaseService* dbService) {
             res.set_content("Signup failed", "text/plain");
             std::cout << "[HTTP] Signup failed for: " << email << std::endl;
         }
+    });
+    
+    svr.Get("/status", [](const httplib::Request& req, httplib::Response& res) {
+        std::cout << "[HTTP] Status request received" << std::endl;
+        httplib::SSLClient client("data-api.polymarket.com", 443);
+        auto apiRes = client.Get("/");
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status), "text/plain");
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+    });
+    
+    svr.Get("/teams", [](const httplib::Request& req, httplib::Response& res) {
+        std::cout << "[HTTP] Teams request received" << std::endl;
+        httplib::SSLClient client("gamma-api.polymarket.com", 443);
+        auto apiRes = client.Get("/teams");
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status), "text/plain");
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+    });
+    
+    svr.Get("/sports", [](const httplib::Request& req, httplib::Response& res) {
+        std::cout << "[HTTP] Sports metadata request received" << std::endl;
+        httplib::SSLClient client("gamma-api.polymarket.com", 443);
+        auto apiRes = client.Get("/sports");
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status), "text/plain");
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+    });
+    
+    svr.Get("/events", [](const httplib::Request& req, httplib::Response& res) {
+        std::cout << "[HTTP] List events request received" << std::endl;
+        httplib::SSLClient client("gamma-api.polymarket.com", 443);
+        auto apiRes = client.Get("/events");
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status), "text/plain");
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+    });
+    
+    svr.Get("/events/:id", [](const httplib::Request& req, httplib::Response& res) {
+        std::string id = req.matches[1];
+        std::cout << "[HTTP] Get event by ID request received: " << id << std::endl;
+        httplib::SSLClient client("gamma-api.polymarket.com", 443);
+        std::string path = "/events/" + id;
+        auto apiRes = client.Get(path.c_str());
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status), "text/plain");
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+    });
+    
+    svr.Get("/events/slug/:slug", [](const httplib::Request& req, httplib::Response& res) {
+        std::string slug = req.matches[1];
+        std::cout << "[HTTP] Get event by slug request received: " << slug << std::endl;
+        httplib::SSLClient client("gamma-api.polymarket.com", 443);
+        std::string path = "/events/slug/" + slug;
+        auto apiRes = client.Get(path.c_str());
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status), "text/plain");
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+    });
+    
+    svr.Get("/events/:id/tags", [](const httplib::Request& req, httplib::Response& res) {
+        std::string id = req.matches[1];
+        std::cout << "[HTTP] Get event tags request received: " << id << std::endl;
+        httplib::SSLClient client("gamma-api.polymarket.com", 443);
+        std::string path = "/events/" + id + "/tags";
+        auto apiRes = client.Get(path.c_str());
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status), "text/plain");
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+    });
+    
+    svr.Get("/markets", [](const httplib::Request& req, httplib::Response& res) {
+        std::cout << "[HTTP] List markets request received" << std::endl;
+        httplib::SSLClient client("gamma-api.polymarket.com", 443);
+        auto apiRes = client.Get("/markets");
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status), "text/plain");
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+    });
+    
+    svr.Get("/markets/:id", [](const httplib::Request& req, httplib::Response& res) {
+        std::string id = req.matches[1];
+        std::cout << "[HTTP] Get market by ID request received: " << id << std::endl;
+        httplib::SSLClient client("gamma-api.polymarket.com", 443);
+        std::string path = "/markets/" + id;
+        auto apiRes = client.Get(path.c_str());
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status), "text/plain");
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+    });
+    
+    svr.Get("/markets/slug/:slug", [](const httplib::Request& req, httplib::Response& res) {
+        std::string slug = req.matches[1];
+        std::cout << "[HTTP] Get market by slug request received: " << slug << std::endl;
+        httplib::SSLClient client("gamma-api.polymarket.com", 443);
+        std::string path = "/markets/slug/" + slug;
+        auto apiRes = client.Get(path.c_str());
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status), "text/plain");
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+    });
+    
+    svr.Get("/markets/:id/tags", [](const httplib::Request& req, httplib::Response& res) {
+        std::string id = req.matches[1];
+        std::cout << "[HTTP] Get market tags request received: " << id << std::endl;
+        httplib::SSLClient client("gamma-api.polymarket.com", 443);
+        std::string path = "/markets/" + id + "/tags";
+        auto apiRes = client.Get(path.c_str());
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status), "text/plain");
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+    });
+    
+    svr.Get("/series", [](const httplib::Request& req, httplib::Response& res) {
+        std::cout << "[HTTP] List series request received" << std::endl;
+        httplib::SSLClient client("gamma-api.polymarket.com", 443);
+        auto apiRes = client.Get("/series");
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status), "text/plain");
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+    });
+    
+    svr.Get("/series/:id", [](const httplib::Request& req, httplib::Response& res) {
+        std::string id = req.matches[1];
+        std::cout << "[HTTP] Get series by ID request received: " << id << std::endl;
+        httplib::SSLClient client("gamma-api.polymarket.com", 443);
+        std::string path = "/series/" + id;
+        auto apiRes = client.Get(path.c_str());
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status), "text/plain");
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+    });
+    
+    svr.Get("/search", [](const httplib::Request& req, httplib::Response& res) {
+        std::cout << "[HTTP] Search request received" << std::endl;
+        
+        std::string query = req.get_param_value("q");
+        if (query.empty()) {
+            res.status = 400;
+            res.set_content("Missing query parameter 'q'", "text/plain");
+            return;
+        }
+        
+        httplib::SSLClient client("gamma-api.polymarket.com", 443);
+        client.set_follow_location(true);
+        std::string encodedQuery = urlEncode(query);
+        std::string path = "/public-search?q=" + encodedQuery;
+        
+        httplib::Headers headers = {
+            {"Accept", "application/json"},
+            {"User-Agent", "PolyTerminal/1.0"}
+        };
+        
+        auto apiRes = client.Get(path.c_str(), headers);
+        
+        if (!apiRes) {
+            res.status = 502;
+            res.set_content("Failed to reach Polymarket API", "text/plain");
+            return;
+        }
+        
+        if (apiRes->status != 200) {
+            res.status = apiRes->status;
+            res.set_content("API error: " + std::to_string(apiRes->status) + " - " + apiRes->body, "text/plain");
+            std::cout << "[HTTP] Search failed: " << apiRes->status << " - " << apiRes->body << std::endl;
+            return;
+        }
+        
+        res.status = 200;
+        res.set_content(apiRes->body, "application/json");
+        std::cout << "[HTTP] Search successful for: " << query << std::endl;
     });
     
     std::cout << "HTTP Server listening on 0.0.0.0:8888" << std::endl;
