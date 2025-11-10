@@ -42,21 +42,21 @@ Card::~Card() {}
 void Card::setupUI() {
     // Create main layout
     mainLayout = new QVBoxLayout(this);
-    mainLayout->setSpacing(10);
-    mainLayout->setContentsMargins(15, 15, 15, 15);
+    mainLayout->setSpacing(5);
+    mainLayout->setContentsMargins(8, 8, 8, 8);
     
     // Title
     titleLabel = new QLabel("Market Title", this);
     titleLabel->setWordWrap(true);
-    
+
     // Description
     descriptionLabel = new QLabel("Market description goes here...", this);
     descriptionLabel->setWordWrap(true);
     
     // Image (using QLabel with pixmap)
     imageLabel = new QLabel(this);
-    imageLabel->setMinimumHeight(200);
-    imageLabel->setMaximumHeight(200);
+    imageLabel->setMinimumHeight(150);
+    imageLabel->setMaximumHeight(150);
     imageLabel->setAlignment(Qt::AlignCenter);
     imageLabel->setText("No Image");
     imageLabel->setScaledContents(true);
@@ -72,7 +72,6 @@ void Card::setupUI() {
     // Button layout
     buttonLayout = new QHBoxLayout();
     yesButton = new QPushButton("YES", this);
-    
     noButton = new QPushButton("NO", this);
     
     buttonLayout->addWidget(yesButton);

@@ -23,18 +23,22 @@ void TrendingTab::setupUI() {
     
     // sample card
     createCard();
+
     
     setLayout(layout);
 }
 
 void TrendingTab::createCard(){
-    card = new Card(
-        "Will Bitcoin hit $100k by 2025?",
-        "A prediction market on Bitcoin's price movement. Place your bets!",
-        "",
-        "$0.65",
-        "$0.35",
-        this
-    );
-    layout->addWidget(card);
+    for (int i = 0; i < 10; i++){
+        card = new Card(
+            "Will Bitcoin hit $100k by 2025?",
+            "A prediction market on Bitcoin's price movement. Place your bets!",
+            "",
+            "$0.65",
+            "$0.35",
+            this
+        );
+        layout->addWidget(card);
+        layout->addStretch(1);
+    }
 }

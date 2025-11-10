@@ -86,6 +86,11 @@ add_executable(PolyTerminal
   pages/portfolio.cpp
   pages/event.cpp
   tabs/trendingTab.cpp
+  tabs/newsTab.cpp
+  tabs/politicsTab.cpp
+  tabs/worldTab.cpp
+  tabs/sportsTab.cpp
+  tabs/techTab.cpp
   component/card.cpp)
 
 target_link_libraries(PolyTerminal PRIVATE 

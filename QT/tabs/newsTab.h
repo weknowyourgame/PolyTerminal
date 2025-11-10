@@ -1,5 +1,5 @@
-#ifndef WORLDSTAB_H
-#define WORLDSTAB_H
+#ifndef NEWSTAB_H
+#define NEWSTAB_H
 
 #include <QWidget>
 #include <QLabel>
@@ -7,12 +7,12 @@
 
 class Card;
 
-class WorldTab : public QWidget {
+class NewsTab : public QWidget {
     Q_OBJECT
 
 public:
-    WorldTab(QWidget *parent = nullptr);
-    ~WorldTab();
+    NewsTab(QWidget *parent = nullptr);
+    ~NewsTab();
 
 private:
     QLabel *titleLabel;
@@ -23,4 +23,4 @@ private:
     void createCard();
 };
 
-#endif // WORLDSTAB_H
+#endif // NEWSTAB_H
