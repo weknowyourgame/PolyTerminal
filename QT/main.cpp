@@ -1,7 +1,5 @@
 #include <QApplication>
 #include <QDebug>
-#include "constants.h"
-#include <QString>
 #include "globalShortcuts.h"
 #include "MainWindow.h"
 
@@ -57,8 +55,7 @@ int main(int argc, char **argv){
     CefString(&settings.locales_dir_path).FromASCII("locales");
 
     // Create CEF app WITHOUT creating browser window yet
-    // Pass empty strings - don't create browser in OnContextInitialized
-    CefRefPtr<App> cefApp(new App("", ""));  // ← Empty, no auto-browser
+    CefRefPtr<App> cefApp(new App("", ""));
 
     // Initialize CEF
     if (!CefInitialize(main_args, settings, cefApp.get(), nullptr)) {
@@ -68,7 +65,7 @@ int main(int argc, char **argv){
     // ===== QT APPLICATION =====
     QApplication qtApp(argc, argv);
     
-    // MainWindow instance (handles pages, menu, shortcuts, etc.)
+    // MainWindow instance
     MainWindow window;
     window.setWindowFlags(Qt::FramelessWindowHint);
 

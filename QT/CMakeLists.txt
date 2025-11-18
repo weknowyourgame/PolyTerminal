@@ -80,18 +80,7 @@ add_executable(PolyTerminal
   globalShortcuts.h
   MainWindow.cpp
   MainWindow.h
-  constants.h
-  pages/auth.cpp
-  pages/dashboard.cpp
-  pages/portfolio.cpp
-  pages/event.cpp
-  tabs/trendingTab.cpp
-  tabs/newsTab.cpp
-  tabs/politicsTab.cpp
-  tabs/worldTab.cpp
-  tabs/sportsTab.cpp
-  tabs/techTab.cpp
-  component/card.cpp)
+  constants.h)
 
 target_link_libraries(PolyTerminal PRIVATE 
   Qt6::Widgets
